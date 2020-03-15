@@ -1,3 +1,3 @@
 {
-    WiFiBit.connectToWiFiNetwork("SSID", "key")
+    AQbit.connectToWiFiNetwork("SSID", "key")
 }
