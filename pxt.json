@@ -1,7 +1,7 @@
 {
-    "name": "pxt-wifi",
-    "version": "1.0.1",
-    "description": "Connect micro:bit to the Internet with a WiFi:bit module.",
+    "name": "pxt-aqbit",
+    "version": "1.0.0",
+    "description": "AQ:bit's extension.",
     "dependencies": {
         "core": "*"
     },
