@@ -18,14 +18,8 @@ enum BME280_I2C_ADDRESS {
     //% block="0x77"
     ADDR_0x77 = 0x77
 }
-enum BME280_P {
-    //% block="Pa"
-    Pa = 0,
-    //% block="hPa"
-    hPa = 1
-}
-// % color=#4698CB weight=90 icon="\uf2c8"
-// block="AQ:bit"
+
+//% color=#4698CB weight=90 icon="\uf2c8" block="AQ:bit"
 namespace AQbit {
 
     function serialToPMS(): void {
@@ -241,14 +235,6 @@ namespace AQbit {
         H = (var2 >> 12) >> 10
     }
 
-    function PowerOn() {
-        setreg(0xF4, 0x2F)
-    }
-
-    function PowerOff() {
-        setreg(0xF4, 0)
-    }
-
     /**
      * Read BME temperature.
      */
@@ -273,11 +259,10 @@ namespace AQbit {
      * Read pressure.
      */
     //% weight=94
-    //% blockId="aqb_read_pressure" block="read pressure %u"
-    export function readPressure(u: BME280_P): number {
+    //% blockId="aqb_read_pressure" block="read pressure"
+    export function readPressure(): number {
         get()
-        if (u == BME280_P.Pa) return P
-        else return Math.idiv(P, 100)
+        return Math.idiv(P, 100)
     }
 
 }
