@@ -30,6 +30,16 @@ namespace AQbit {
         )
     }
 
+    function verifyBytes(response: Buffer): boolean {
+        let checkCode = 256 * response[30] + response[31]
+        return checkCode == (response[0] + response[1] + response[2] + response[3] + response[4]
+            + response[5] + response[6] + response[7] + response[8] + response[9]
+            + response[10] + response[11] + response[12] + response[13] + response[14]
+            + response[15] + response[16] + response[17] + response[18] + response[19]
+            + response[20] + response[21] + response[22] + response[23] + response[24]
+            + response[25] + response[26] + response[27] + response[28] + response[29])
+    }
+
     /**
      * Put PMS in passive mode.
      */
@@ -37,17 +47,22 @@ namespace AQbit {
     //% blockId="aqb_pms_pasive" block="put PMS in passive mode"
     export function putPMSInPassiveMode(): void {
         serialToPMS()
-        serial.setRxBufferSize(8)
-        let bufr = pins.createBuffer(7);
-        bufr.setNumber(NumberFormat.UInt8LE, 0, 66);
-        bufr.setNumber(NumberFormat.UInt8LE, 1, 77);
-        bufr.setNumber(NumberFormat.UInt8LE, 2, 225);
-        bufr.setNumber(NumberFormat.UInt8LE, 3, 0);
-        bufr.setNumber(NumberFormat.UInt8LE, 4, 0);
-        bufr.setNumber(NumberFormat.UInt8LE, 5, 1);
-        bufr.setNumber(NumberFormat.UInt8LE, 6, 112);
-        serial.writeBuffer(bufr)
+        serial.setRxBufferSize(32)
+        let request = pins.createBuffer(7);
+        request.setNumber(NumberFormat.UInt8LE, 0, 66);
+        request.setNumber(NumberFormat.UInt8LE, 1, 77);
+        request.setNumber(NumberFormat.UInt8LE, 2, 225);
+        request.setNumber(NumberFormat.UInt8LE, 3, 0);
+        request.setNumber(NumberFormat.UInt8LE, 4, 0);
+        request.setNumber(NumberFormat.UInt8LE, 5, 1);
+        request.setNumber(NumberFormat.UInt8LE, 6, 112);
+        serial.writeBuffer(request)
         basic.pause(500)
+        let response = serial.readBuffer(32)
+        if (!verifyBytes(response)) {
+            serial.writeBuffer(request)
+            basic.pause(500)
+        }
     }
 
     /**
@@ -58,17 +73,29 @@ namespace AQbit {
     export function readPMS(): number {
         serialToPMS()
         serial.setRxBufferSize(32)
-        let bufr2 = pins.createBuffer(7);
-        bufr2.setNumber(NumberFormat.UInt8LE, 0, 66);
-        bufr2.setNumber(NumberFormat.UInt8LE, 1, 77);
-        bufr2.setNumber(NumberFormat.UInt8LE, 2, 226);
-        bufr2.setNumber(NumberFormat.UInt8LE, 3, 0);
-        bufr2.setNumber(NumberFormat.UInt8LE, 4, 0);
-        bufr2.setNumber(NumberFormat.UInt8LE, 5, 1);
-        bufr2.setNumber(NumberFormat.UInt8LE, 6, 113);
-        serial.writeBuffer(bufr2)
+        let request = pins.createBuffer(7);
+        request.setNumber(NumberFormat.UInt8LE, 0, 66);
+        request.setNumber(NumberFormat.UInt8LE, 1, 77);
+        request.setNumber(NumberFormat.UInt8LE, 2, 226);
+        request.setNumber(NumberFormat.UInt8LE, 3, 0);
+        request.setNumber(NumberFormat.UInt8LE, 4, 0);
+        request.setNumber(NumberFormat.UInt8LE, 5, 1);
+        request.setNumber(NumberFormat.UInt8LE, 6, 113);
+        serial.writeBuffer(request)
         basic.pause(1000)
-        return serial.readBuffer(32)[13]
+        let response = serial.readBuffer(32)
+        if (verifyBytes(response)) {
+            return response[13]
+        } else {
+            serial.writeBuffer(request)
+            basic.pause(1000)
+            response = serial.readBuffer(32)
+            if (verifyBytes(response)) {
+                return response[13]
+            } else {
+                return -1
+            }
+        }
     }
 
     let pauseBaseValue: number = 100
