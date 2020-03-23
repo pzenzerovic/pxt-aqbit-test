@@ -71,7 +71,9 @@ namespace AQbit {
     //% weight=99
     //% blockId="aqb_read_pms" block="read PMS 2.5"
     export function readPMS(): number {
+        led.plot(1, 0)
         serialToPMS()
+        led.plot(1, 1)
         serial.setRxBufferSize(32)
         let request = pins.createBuffer(7);
         request.setNumber(NumberFormat.UInt8LE, 0, 66);
@@ -82,17 +84,25 @@ namespace AQbit {
         request.setNumber(NumberFormat.UInt8LE, 5, 1);
         request.setNumber(NumberFormat.UInt8LE, 6, 113);
         serial.writeBuffer(request)
+        led.plot(1, 2)
         basic.pause(1000)
         let response = serial.readBuffer(32)
+        led.plot(1, 3)
         if (verifyBytes(response)) {
+            led.plot(2, 0)
             return response[13]
         } else {
+            led.plot(3, 0)
             serial.writeBuffer(request)
+            led.plot(3, 1)
             basic.pause(1000)
             response = serial.readBuffer(32)
+            led.plot(3, 2)
             if (verifyBytes(response)) {
+                led.plot(3, 3)
                 return response[13]
             } else {
+                led.plot(3, 4)
                 return -1
             }
         }
