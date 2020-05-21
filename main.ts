@@ -237,7 +237,7 @@ namespace AQbit {
     let dig_H6 = getInt8LE(0xE7)
     setreg(0xF2, 0x04)
     setreg(0xF4, 0x2F)
-    setreg(0xF5, 0x0C)
+    setreg(0xF5, 0xAC)
     let T = 0
     let P = 0
     let H = 0
