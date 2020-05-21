@@ -273,7 +273,7 @@ namespace AQbit {
     }
 
     /**
-     * Read BME temperature.
+     * Read BME temperature..
      */
     //% weight=96
     //% blockId="aqb_read_temperature" block="read BME temperature"
